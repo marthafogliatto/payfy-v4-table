@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payfy - Políticas de Gastos (V4)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary-orange: #FF6B35;
+            --primary-orange-dark: #E85A28;
+            --primary-orange-light: #FFF5F0;
+            --success-green: #10B981;
+            --success-green-light: #D1FAE5;
+            --warning-yellow: #F59E0B;
+            --warning-yellow-light: #FEF3C7;
+            --info-blue: #3B82F6;
+            --info-blue-light: #DBEAFE;
+            --purple: #8B5CF6;
+            --purple-light: #EDE9FE;
+            --danger-red: #EF4444;
+            --danger-red-light: #FEE2E2;
+            --gray-50: #FAFAFA;
+            --gray-100: #F5F5F5;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
+            --white: #FFFFFF;
+            --border: #E5E7EB;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 8px;
+            --radius-xl: 12px;
+            --radius-2xl: 16px;
+            --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--gray-50); color: var(--gray-700); line-height: 1.5;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: var(--spacing-xl); }
+
+        /* ─── Header ─── */
+        .header { background: var(--white); border-bottom: 1px solid var(--border); padding: var(--spacing-lg) 0; }
+        .header-content {
+            max-width: 1400px; margin: 0 auto; padding: 0 var(--spacing-xl);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo { display: flex; align-items: center; gap: var(--spacing-sm); font-size: 20px; font-weight: 700; color: var(--gray-900); }
+        .logo-icon {
+            width: 36px; height: 36px; background: var(--primary-orange); border-radius: var(--radius-md);
+            display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;
+        }
+
+        /* ─── Buttons ─── */
+        .btn {
+            padding: 10px 20px; border-radius: var(--radius-lg); font-size: 14px; font-weight: 600;
+            cursor: pointer; border: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: var(--spacing-sm);
+        }
+        .btn-primary { background: var(--primary-orange); color: white; }
+        .btn-primary:hover { background: var(--primary-orange-dark); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+        .btn-secondary { background: var(--white); color: var(--gray-700); border: 1px solid var(--border); }
+        .btn-secondary:hover { background: var(--gray-50); }
+        .btn-sm { padding: 6px 14px; font-size: 12px; border-radius: var(--radius-md); }
+        .btn-danger { background: var(--danger-red); color: white; }
+        .btn-danger:hover { background: #DC2626; }
+        .btn-configure {
+            background: #1E40AF; color: white; border: none; padding: 8px 16px;
+            border-radius: var(--radius-md); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-configure:hover { background: #1E3A8A; }
+
+        /* ─── Agent Status Bar ─── */
+        .agent-status-bar {
+            background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: var(--radius-lg);
+            padding: 12px var(--spacing-md); display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: var(--spacing-lg);
+        }
+        .agent-status-left { display: flex; align-items: center; gap: var(--spacing-sm); flex-wrap: wrap; }
+        .agent-status-dot { width: 10px; height: 10px; background: var(--success-green); border-radius: 50%; flex-shrink: 0; }
+        .agent-status-label { font-weight: 700; color: #1E40AF; font-size: 14px; }
+        .agent-status-info { font-size: 13px; color: var(--gray-600); }
+        .agent-status-right { position: relative; }
+        .agent-dropdown {
+            display: none; position: absolute; top: calc(100% + 4px); right: 0;
+            background: white; border: 1px solid var(--border); border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg); min-width: 280px; z-index: 100; overflow: hidden;
+        }
+        .agent-dropdown.show { display: block; }
+        .agent-dropdown-item { padding: 10px 16px; font-size: 13px; color: var(--gray-700); cursor: pointer; transition: background 0.15s; }
+        .agent-dropdown-item:hover { background: var(--gray-50); }
+        .agent-dropdown-item.active { background: #EFF6FF; color: #1E40AF; font-weight: 600; }
+        .agent-status-bar.mode-off { background: var(--gray-100); border-color: var(--gray-300); }
+        .agent-status-bar.mode-off .agent-status-dot { background: var(--gray-400); }
+        .agent-status-bar.mode-off .agent-status-label { color: var(--gray-600); }
+        .agent-status-bar.mode-test { background: #FEF3C7; border-color: #FDE68A; }
+        .agent-status-bar.mode-test .agent-status-dot { background: var(--warning-yellow); }
+        .agent-status-bar.mode-test .agent-status-label { color: #92400E; }
+
+        .page-title { font-size: 28px; font-weight: 700; color: var(--gray-900); margin-bottom: var(--spacing-sm); }
+        .page-subtitle { font-size: 14px; color: var(--gray-600); margin-bottom: var(--spacing-lg); }
+
+        /* ─── Filter Bar ─── */
+        .filter-bar {
+            background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-xl);
+            padding: var(--spacing-md) var(--spacing-lg); margin-bottom: var(--spacing-lg);
+            display: flex; align-items: center; gap: var(--spacing-lg); flex-wrap: wrap;
+            box-shadow: var(--shadow-sm);
+        }
+        .filter-group { display: flex; align-items: center; gap: var(--spacing-sm); }
+        .filter-label { font-size: 12px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+        .filter-pills { display: flex; gap: 4px; flex-wrap: wrap; }
+        .filter-pill {
+            padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+            border: 1px solid var(--border); background: var(--white); color: var(--gray-600);
+            cursor: pointer; transition: all 0.2s; white-space: nowrap;
+        }
+        .filter-pill:hover { border-color: var(--gray-400); }
+        .filter-pill.active { background: var(--gray-900); color: var(--white); border-color: var(--gray-900); }
+        .filter-pill.active-agent { background: #065F46; color: white; border-color: #065F46; }
+        .filter-pill.active-flag { background: #991B1B; color: white; border-color: #991B1B; }
+        .filter-pill.active-conf { background: #92400E; color: white; border-color: #92400E; }
+        .filter-separator { width: 1px; height: 24px; background: var(--border); }
+        .search-input {
+            flex: 1; min-width: 180px; padding: 8px 12px 8px 36px; border: 1px solid var(--border);
+            border-radius: var(--radius-lg); font-size: 13px; color: var(--gray-700);
+            font-family: inherit; transition: all 0.2s; background: var(--gray-50);
+        }
+        .search-input:focus { outline: none; border-color: var(--primary-orange); background: var(--white); box-shadow: 0 0 0 3px rgba(255,107,53,0.1); }
+        .search-wrapper { position: relative; flex: 1; min-width: 180px; }
+        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--gray-400); font-size: 14px; pointer-events: none; }
+
+        /* ─── Data Table ─── */
+        .table-container {
+            background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-2xl);
+            overflow: hidden; box-shadow: var(--shadow-sm); margin-bottom: var(--spacing-lg);
+        }
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .data-table th {
+            background: var(--gray-50); font-size: 12px; font-weight: 600; color: var(--gray-500);
+            text-transform: uppercase; letter-spacing: 0.05em; padding: var(--spacing-md) var(--spacing-lg);
+            border-bottom: 1px solid var(--border); text-align: left; cursor: pointer;
+            transition: color 0.2s; white-space: nowrap; user-select: none;
+        }
+        .data-table th:hover { color: var(--gray-900); }
+        .data-table th .sort-icon { display: inline-block; margin-left: 4px; font-size: 10px; color: var(--gray-400); }
+        .data-table th.sorted-asc .sort-icon { color: var(--gray-900); }
+        .data-table th.sorted-desc .sort-icon { color: var(--gray-900); }
+        .data-table td {
+            padding: var(--spacing-md) var(--spacing-lg); font-size: 13px; color: var(--gray-700);
+            border-bottom: 1px solid var(--border); transition: background 0.15s;
+        }
+        .data-table tbody tr { cursor: pointer; animation: fadeInRow 0.3s ease forwards; opacity: 0; }
+        .data-table tbody tr:hover td { background: var(--gray-50); }
+        .data-table tbody tr.selected td { background: #EFF6FF; }
+        .data-table td.policy-cell { font-weight: 600; color: var(--gray-800); }
+        .data-table td.rule-cell { max-width: 280px; }
+
+        .badge-sm {
+            display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.05em; padding: 3px 8px; border-radius: 10px; white-space: nowrap;
+        }
+        .badge-agent { background: #D1FAE5; color: #065F46; }
+        .badge-flag { background: #FEE2E2; color: #991B1B; }
+        .badge-confidential { background: #FDE68A; color: #92400E; }
+        .status-active { color: var(--success-green); font-weight: 600; font-size: 12px; }
+        .status-draft { color: var(--warning-yellow); font-weight: 600; font-size: 12px; }
+        .edit-date { font-size: 12px; color: var(--gray-500); white-space: nowrap; }
+
+        .row-checkbox { width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary-orange); }
+        .th-checkbox { width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary-orange); }
+
+        /* ─── Bulk Actions ─── */
+        .bulk-actions {
+            display: none; background: var(--gray-900); color: white; border-radius: var(--radius-xl);
+            padding: 10px var(--spacing-lg); margin-bottom: var(--spacing-md);
+            align-items: center; gap: var(--spacing-md); animation: fadeIn 0.2s ease;
+        }
+        .bulk-actions.show { display: flex; }
+        .bulk-count { font-size: 13px; font-weight: 600; }
+        .bulk-btn {
+            padding: 6px 14px; border-radius: var(--radius-md); font-size: 12px; font-weight: 600;
+            cursor: pointer; border: 1px solid rgba(255,255,255,0.3); background: transparent;
+            color: white; transition: all 0.2s;
+        }
+        .bulk-btn:hover { background: rgba(255,255,255,0.15); }
+        .bulk-btn.danger { border-color: var(--danger-red); color: #FCA5A5; }
+        .bulk-btn.danger:hover { background: var(--danger-red); color: white; }
+
+        /* ─── Slide-over ─── */
+        .slideover-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4); z-index: 900; opacity: 0;
+            pointer-events: none; transition: opacity 0.3s;
+        }
+        .slideover-overlay.active { opacity: 1; pointer-events: auto; }
+        .slideover {
+            position: fixed; top: 0; right: -480px; width: 480px; height: 100vh;
+            background: var(--white); box-shadow: var(--shadow-xl); z-index: 950;
+            transition: right 0.3s ease; display: flex; flex-direction: column;
+            border-left: 1px solid var(--border);
+        }
+        .slideover.open { right: 0; }
+        .slideover-header {
+            padding: var(--spacing-lg); border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: flex-start;
+        }
+        .slideover-title { font-size: 18px; font-weight: 700; color: var(--gray-900); }
+        .slideover-subtitle { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+        .slideover-close {
+            width: 32px; height: 32px; border-radius: var(--radius-md); background: var(--gray-100);
+            border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            color: var(--gray-600); font-size: 20px; transition: all 0.2s; flex-shrink: 0;
+        }
+        .slideover-close:hover { background: var(--gray-200); color: var(--gray-900); }
+        .slideover-body { padding: var(--spacing-lg); flex: 1; overflow-y: auto; }
+
+        /* Workflow builder blocks (reused from V1) */
+        .trigger-block {
+            background: var(--white); border: 2px solid var(--info-blue); border-radius: var(--radius-xl);
+            padding: var(--spacing-lg); margin-bottom: var(--spacing-md);
+        }
+        .trigger-header { display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-md); }
+        .trigger-icon {
+            width: 40px; height: 40px; background: var(--info-blue-light); border-radius: var(--radius-lg);
+            display: flex; align-items: center; justify-content: center; color: var(--info-blue); font-size: 20px;
+        }
+        .trigger-title { font-size: 16px; font-weight: 600; color: var(--gray-900); flex: 1; }
+        .trigger-badge { background: var(--gray-100); color: var(--gray-600); padding: 4px 10px; border-radius: 16px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+        .trigger-content { display: flex; align-items: center; gap: var(--spacing-sm); padding-left: 52px; }
+        .trigger-label { font-size: 14px; color: var(--gray-600); }
+        .trigger-value {
+            background: var(--success-green-light); color: var(--success-green); padding: 6px 12px;
+            border-radius: var(--radius-md); font-size: 14px; font-weight: 600; border: 1.5px solid var(--success-green);
+        }
+        .connector { width: 2px; height: 24px; background: var(--gray-300); margin: 0 auto; position: relative; }
+        .connector::after {
+            content: ''; position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%);
+            width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid var(--gray-300);
+        }
+        .condition-block { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: var(--spacing-lg); margin-bottom: var(--spacing-md); }
+        .condition-header { display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-md); }
+        .condition-icon {
+            width: 36px; height: 36px; background: var(--gray-100); border-radius: var(--radius-lg);
+            display: flex; align-items: center; justify-content: center; color: var(--gray-600); font-size: 18px;
+        }
+        .condition-title { flex: 1; font-size: 14px; font-weight: 600; color: var(--gray-900); }
+        .condition-row { display: flex; align-items: center; gap: var(--spacing-sm); padding-left: 48px; flex-wrap: wrap; }
+        .condition-keyword { font-size: 14px; font-weight: 600; color: var(--gray-900); }
+        .condition-field { font-size: 14px; color: var(--gray-600); }
+        .condition-value { background: var(--gray-100); padding: 6px 12px; border-radius: var(--radius-md); font-size: 14px; color: var(--gray-900); font-weight: 500; }
+        .nested-actions { margin-left: 48px; border-left: 2px solid var(--gray-200); padding-left: var(--spacing-lg); margin-top: var(--spacing-md); }
+        .action-block { background: var(--gray-50); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--spacing-md) var(--spacing-lg); margin-bottom: var(--spacing-sm); }
+        .action-content { display: flex; align-items: center; gap: var(--spacing-sm); flex-wrap: wrap; }
+        .action-icon { width: 28px; height: 28px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+        .action-icon.approve { background: var(--success-green-light); color: var(--success-green); }
+        .action-icon.require { background: var(--warning-yellow-light); color: var(--warning-yellow); }
+        .action-keyword { font-size: 14px; font-weight: 600; color: var(--gray-900); }
+        .action-agent {
+            background: var(--purple-light); color: var(--purple); padding: 6px 14px; border-radius: var(--radius-md);
+            font-size: 14px; font-weight: 600; border: 1.5px solid var(--purple); display: inline-flex; align-items: center; gap: 6px;
+        }
+        .action-approver {
+            background: var(--warning-yellow-light); color: #D97706; padding: 6px 14px; border-radius: var(--radius-md);
+            font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .approver-avatar {
+            width: 20px; height: 20px; border-radius: 50%; background: #D97706; color: white;
+            display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;
+        }
+        .final-action {
+            background: var(--success-green-light); border: 1.5px solid var(--success-green); border-radius: var(--radius-xl);
+            padding: var(--spacing-lg); display: flex; align-items: center; gap: var(--spacing-md);
+        }
+        .final-action-icon {
+            width: 36px; height: 36px; background: white; border-radius: var(--radius-lg);
+            display: flex; align-items: center; justify-content: center; color: var(--success-green); font-size: 20px;
+        }
+        .final-action-text { font-size: 16px; font-weight: 600; color: var(--gray-900); }
+        .default-badge { display: inline-block; background: #D1FAE5; color: #065F46; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-left: 8px; }
+
+        /* Flags Override in slideover */
+        .flags-override-section { background: #FEF2F2; border: 1px solid #FECACA; border-radius: var(--radius-lg); padding: var(--spacing-md); margin-top: var(--spacing-lg); }
+        .flags-override-header { font-weight: 700; color: #DC2626; font-size: 14px; margin-bottom: 8px; }
+        .flags-override-item { font-size: 13px; color: var(--gray-700); padding: 6px 0; border-bottom: 1px solid rgba(220,38,38,0.1); }
+        .flags-override-item:last-child { border-bottom: none; }
+        .flags-override-note { font-size: 11px; color: var(--gray-500); margin-top: 8px; font-style: italic; }
+
+        /* ─── Footer Summary ─── */
+        .summary-footer {
+            background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-xl);
+            padding: var(--spacing-md) var(--spacing-lg); display: flex; align-items: center;
+            justify-content: space-between; flex-wrap: wrap; gap: var(--spacing-md);
+            box-shadow: var(--shadow-sm);
+        }
+        .summary-stat { display: flex; align-items: center; gap: var(--spacing-sm); }
+        .summary-stat-value { font-size: 18px; font-weight: 700; color: var(--gray-900); }
+        .summary-stat-label { font-size: 12px; color: var(--gray-500); }
+        .summary-breakdown { display: flex; gap: var(--spacing-md); }
+        .summary-breakdown-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gray-600); }
+        .summary-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .summary-dot.agent { background: var(--success-green); }
+        .summary-dot.flag { background: var(--danger-red); }
+        .summary-dot.conf { background: var(--warning-yellow); }
+
+        /* ─── Modal ─── */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center;
+            z-index: 1000; backdrop-filter: blur(4px);
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: var(--white); border-radius: var(--radius-2xl); max-width: 800px;
+            width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-xl);
+            animation: modalSlideIn 0.3s ease;
+        }
+        @keyframes modalSlideIn { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .modal-header { padding: var(--spacing-xl); border-bottom: 1px solid var(--border); }
+        .modal-header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm); }
+        .modal-title { font-size: 24px; font-weight: 700; color: var(--gray-900); }
+        .modal-close {
+            width: 32px; height: 32px; border-radius: var(--radius-md); background: var(--gray-100);
+            border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            color: var(--gray-600); font-size: 20px; transition: all 0.2s;
+        }
+        .modal-close:hover { background: var(--gray-200); color: var(--gray-900); }
+        .modal-subtitle { font-size: 14px; color: var(--gray-600); }
+        .modal-body { padding: var(--spacing-xl); }
+        .tabs { display: flex; gap: var(--spacing-sm); margin-bottom: var(--spacing-xl); border-bottom: 2px solid var(--border); }
+        .tab {
+            padding: var(--spacing-md) var(--spacing-lg); background: none; border: none;
+            border-bottom: 2px solid transparent; color: var(--gray-600); font-size: 14px;
+            font-weight: 600; cursor: pointer; transition: all 0.2s; margin-bottom: -2px;
+        }
+        .tab:hover { color: var(--gray-900); }
+        .tab.active { color: var(--primary-orange); border-bottom-color: var(--primary-orange); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .upload-area {
+            border: 2px dashed var(--border); border-radius: var(--radius-xl); padding: var(--spacing-2xl);
+            text-align: center; transition: all 0.3s; cursor: pointer;
+        }
+        .upload-area:hover, .upload-area.dragover { border-color: var(--primary-orange); background: var(--primary-orange-light); }
+        .upload-icon { width: 64px; height: 64px; margin: 0 auto var(--spacing-lg); background: var(--gray-100); border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center; font-size: 32px; }
+        .upload-title { font-size: 16px; font-weight: 600; color: var(--gray-900); margin-bottom: var(--spacing-sm); }
+        .upload-subtitle { font-size: 13px; color: var(--gray-600); margin-bottom: var(--spacing-lg); }
+        .upload-button {
+            display: inline-flex; align-items: center; gap: var(--spacing-sm); padding: 10px 20px;
+            background: var(--primary-orange); color: white; border: none; border-radius: var(--radius-lg);
+            font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        .upload-button:hover { background: var(--primary-orange-dark); }
+        .upload-info { margin-top: var(--spacing-md); font-size: 12px; color: var(--gray-500); }
+        #fileInput { display: none; }
+        .processing-container { display: none; }
+        .processing-container.active { display: block; }
+        .processing-header { text-align: center; margin-bottom: var(--spacing-xl); }
+        .processing-icon {
+            width: 64px; height: 64px; margin: 0 auto var(--spacing-md);
+            background: linear-gradient(135deg, var(--purple-light), var(--info-blue-light));
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .processing-title { font-size: 18px; font-weight: 600; color: var(--gray-900); margin-bottom: var(--spacing-xs); }
+        .processing-subtitle { font-size: 13px; color: var(--gray-600); }
+        .processing-steps { display: flex; flex-direction: column; gap: var(--spacing-sm); }
+        .processing-step { display: flex; align-items: center; gap: var(--spacing-md); padding: var(--spacing-md); background: var(--gray-50); border-radius: var(--radius-lg); }
+        .processing-step.active { background: var(--primary-orange-light); border: 1px solid var(--primary-orange); }
+        .processing-step.completed { background: var(--success-green-light); }
+        .processing-step-icon { width: 28px; height: 28px; border-radius: 50%; background: var(--white); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .processing-step-text { flex: 1; font-size: 13px; font-weight: 500; color: var(--gray-700); }
+        .processing-step-status { font-size: 11px; color: var(--gray-500); font-weight: 600; }
+        .processing-step.completed .processing-step-status { color: var(--success-green); }
+        .success-container { display: none; text-align: center; }
+        .success-container.active { display: block; }
+        .success-icon { width: 80px; height: 80px; margin: 0 auto var(--spacing-lg); background: var(--success-green-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; }
+        .success-title { font-size: 24px; font-weight: 700; color: var(--gray-900); margin-bottom: var(--spacing-sm); }
+        .success-subtitle { font-size: 14px; color: var(--gray-600); margin-bottom: var(--spacing-xl); }
+        .success-stats { display: grid; grid-template-columns: repeat(2,1fr); gap: var(--spacing-md); margin-bottom: var(--spacing-xl); }
+        .success-stat { padding: var(--spacing-lg); background: var(--gray-50); border-radius: var(--radius-lg); }
+        .success-stat-value { font-size: 32px; font-weight: 700; color: var(--gray-900); margin-bottom: 4px; }
+        .success-stat-label { font-size: 12px; color: var(--gray-600); }
+        .success-actions { display: flex; gap: var(--spacing-md); justify-content: center; }
+
+        /* ─── Toast ─── */
+        .toast {
+            position: fixed; bottom: 24px; right: 24px; background: #065F46; color: white;
+            padding: 12px 20px; border-radius: var(--radius-lg); font-size: 14px; font-weight: 500;
+            box-shadow: var(--shadow-xl); z-index: 2000; opacity: 0; transform: translateY(10px); transition: all 0.3s;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        /* ─── Animations ─── */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInRow { from { opacity: 0; } to { opacity: 1; } }
+
+        .no-results { text-align: center; padding: var(--spacing-2xl); color: var(--gray-500); font-size: 14px; }
+
+        @media (max-width: 1100px) {
+            .filter-bar { flex-direction: column; align-items: flex-start; }
+            .filter-separator { display: none; }
+            .decision-card { grid-template-columns: 1fr; }
+            .slideover { width: 100%; right: -100%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">📊</div>
+                <span>Payfy</span>
+            </div>
+            <button class="btn btn-primary" onclick="openNewPolicyModal()">
+                <span>✨</span> <span>Criar Nova Política</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1 class="page-title">Políticas de Gastos</h1>
+        <p class="page-subtitle">Visão consolidada — todas as regras de todas as políticas</p>
+
+        <!-- Agent Status Bar -->
+        <div class="agent-status-bar" id="agentStatusBar">
+            <div class="agent-status-left">
+                <span class="agent-status-dot"></span>
+                <span class="agent-status-label">Policy Agent ativo</span>
+                <span class="agent-status-info">Modo: Aprovação automática para &lt; R$ 2.000 · 99.1% acurácia · 847 transações</span>
+            </div>
+            <div class="agent-status-right">
+                <button class="btn-configure" onclick="toggleAgentDropdown(event)">Configurar</button>
+                <div class="agent-dropdown" id="agentDropdown">
+                    <div class="agent-dropdown-item" onclick="setAgentMode('off',event)">Desativar Agent</div>
+                    <div class="agent-dropdown-item" onclick="setAgentMode('test',event)">Modo teste (admins only)</div>
+                    <div class="agent-dropdown-item" onclick="setAgentMode('recommend',event)">Modo recomendação</div>
+                    <div class="agent-dropdown-item active" onclick="setAgentMode('auto',event)">Aprovação automática</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="filter-group">
+                <span class="filter-label">Política</span>
+                <div class="filter-pills" id="filterPolicy">
+                    <span class="filter-pill active" data-filter="all" onclick="toggleFilter(this,'policy')">Todas</span>
+                    <span class="filter-pill" data-filter="Solicitações" onclick="toggleFilter(this,'policy')">📋 Solicitações</span>
+                    <span class="filter-pill" data-filter="Despesas de Cartão" onclick="toggleFilter(this,'policy')">💳 Cartão</span>
+                    <span class="filter-pill" data-filter="Reembolsos" onclick="toggleFilter(this,'policy')">📄 Reembolsos</span>
+                    <span class="filter-pill" data-filter="Viagens" onclick="toggleFilter(this,'policy')">✈️ Viagens</span>
+                </div>
+            </div>
+            <div class="filter-separator"></div>
+            <div class="filter-group">
+                <span class="filter-label">Tipo</span>
+                <div class="filter-pills" id="filterType">
+                    <span class="filter-pill active" data-filter="all" onclick="toggleFilter(this,'type')">Todos</span>
+                    <span class="filter-pill" data-filter="Agent" onclick="toggleFilter(this,'type')">Agent</span>
+                    <span class="filter-pill" data-filter="Flag" onclick="toggleFilter(this,'type')">Flag</span>
+                    <span class="filter-pill" data-filter="Confidencial" onclick="toggleFilter(this,'type')">Conf.</span>
+                </div>
+            </div>
+            <div class="filter-separator"></div>
+            <div class="filter-group">
+                <span class="filter-label">Status</span>
+                <div class="filter-pills" id="filterStatus">
+                    <span class="filter-pill active" data-filter="all" onclick="toggleFilter(this,'status')">Todos</span>
+                    <span class="filter-pill" data-filter="Ativa" onclick="toggleFilter(this,'status')">Ativa</span>
+                    <span class="filter-pill" data-filter="Draft" onclick="toggleFilter(this,'status')">Draft</span>
+                </div>
+            </div>
+            <div class="filter-separator"></div>
+            <div class="search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="Buscar regra..." id="searchInput" oninput="applyFilters()">
+            </div>
+        </div>
+
+        <!-- Bulk Actions -->
+        <div class="bulk-actions" id="bulkActions">
+            <span class="bulk-count" id="bulkCount">0 selecionadas</span>
+            <button class="bulk-btn" onclick="showToast('Regras movidas')">Mover</button>
+            <button class="bulk-btn danger" onclick="showToast('Regras desativadas')">Desativar</button>
+        </div>
+
+        <!-- Data Table -->
+        <div class="table-container">
+            <table class="data-table" id="dataTable">
+                <thead>
+                    <tr>
+                        <th style="width:40px"><input type="checkbox" class="th-checkbox" onclick="toggleAllCheckboxes(this)"></th>
+                        <th onclick="sortTable(1)">Política <span class="sort-icon">↕</span></th>
+                        <th onclick="sortTable(2)">Regra <span class="sort-icon">↕</span></th>
+                        <th onclick="sortTable(3)">Tipo <span class="sort-icon">↕</span></th>
+                        <th onclick="sortTable(4)">Trigger <span class="sort-icon">↕</span></th>
+                        <th onclick="sortTable(5)">Ação <span class="sort-icon">↕</span></th>
+                        <th onclick="sortTable(6)">Status <span class="sort-icon">↕</span></th>
+                        <th onclick="sortTable(7)">Última edição <span class="sort-icon">↕</span></th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+            <div class="no-results" id="noResults" style="display:none;">Nenhuma regra encontrada para os filtros selecionados.</div>
+        </div>
+
+        <!-- Footer Summary -->
+        <div class="summary-footer">
+            <div class="summary-stat">
+                <span class="summary-stat-value" id="totalRules">22</span>
+                <span class="summary-stat-label">regras totais</span>
+            </div>
+            <div class="summary-breakdown">
+                <div class="summary-breakdown-item"><span class="summary-dot agent"></span> <span id="agentCount">8</span> Agent</div>
+                <div class="summary-breakdown-item"><span class="summary-dot flag"></span> <span id="flagCount">10</span> Flags</div>
+                <div class="summary-breakdown-item"><span class="summary-dot conf"></span> <span id="confCount">4</span> Confidencial</div>
+            </div>
+            <div class="summary-stat">
+                <span class="summary-stat-value" style="color: var(--success-green);">99.1%</span>
+                <span class="summary-stat-label">cobertura do Agent</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide-over -->
+    <div class="slideover-overlay" id="slideoverOverlay" onclick="closeSlideover()"></div>
+    <div class="slideover" id="slideover">
+        <div class="slideover-header">
+            <div>
+                <div class="slideover-title" id="slideoverTitle">Detalhes da Regra</div>
+                <div class="slideover-subtitle" id="slideoverSubtitle"></div>
+            </div>
+            <button class="slideover-close" onclick="closeSlideover()">✕</button>
+        </div>
+        <div class="slideover-body" id="slideoverBody"></div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModalIfOutside(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-header-top">
+                    <h2 class="modal-title">✨ Criar Nova Política</h2>
+                    <button class="modal-close" onclick="closeModal()">✕</button>
+                </div>
+                <p class="modal-subtitle">Escolha como deseja criar sua política</p>
+            </div>
+            <div class="modal-body">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('upload',event)">📄 Upload de PDF</button>
+                    <button class="tab" onclick="switchTab('prompt',event)">💬 Descrever com IA</button>
+                    <button class="tab" onclick="switchTab('template',event)">📋 Template Payfy</button>
+                    <button class="tab" onclick="switchTab('manual',event)">✏️ Criar Manualmente</button>
+                </div>
+                <div class="tab-content active" id="tab-upload">
+                    <div id="uploadContainer">
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-icon">📄</div>
+                            <h3 class="upload-title">Envie o manual de políticas da sua empresa</h3>
+                            <p class="upload-subtitle">Nossa IA irá ler e criar regras automaticamente</p>
+                            <input type="file" id="fileInput" accept=".pdf,.doc,.docx" onchange="handleFileSelect(event)">
+                            <button class="upload-button" onclick="document.getElementById('fileInput').click()"><span>📎</span> <span>Selecionar Arquivo</span></button>
+                            <p class="upload-info">ou arraste e solte aqui<br>PDF, DOC, DOCX (máx. 10MB)</p>
+                        </div>
+                    </div>
+                    <div class="processing-container" id="processingContainer">
+                        <div class="processing-header">
+                            <div class="processing-icon">✨</div>
+                            <h3 class="processing-title">Processando documento...</h3>
+                            <p class="processing-subtitle">A IA está analisando suas políticas</p>
+                        </div>
+                        <div class="processing-steps">
+                            <div class="processing-step completed" id="proc-step-1"><div class="processing-step-icon">✓</div><div class="processing-step-text">Leitura do PDF</div><div class="processing-step-status">Concluído</div></div>
+                            <div class="processing-step active" id="proc-step-2"><div class="processing-step-icon">🤖</div><div class="processing-step-text">Análise semântica</div><div class="processing-step-status">Processando...</div></div>
+                            <div class="processing-step" id="proc-step-3"><div class="processing-step-icon">🏗️</div><div class="processing-step-text">Estruturação de regras</div><div class="processing-step-status">Aguardando</div></div>
+                            <div class="processing-step" id="proc-step-4"><div class="processing-step-icon">🔍</div><div class="processing-step-text">Identificação de aprovadores</div><div class="processing-step-status">Aguardando</div></div>
+                        </div>
+                    </div>
+                    <div class="success-container" id="successContainer">
+                        <div class="success-icon">✅</div>
+                        <h3 class="success-title">4 Políticas Geradas!</h3>
+                        <p class="success-subtitle">Suas políticas foram criadas e estão prontas para uso</p>
+                        <div class="success-stats">
+                            <div class="success-stat"><div class="success-stat-value">4</div><div class="success-stat-label">Políticas criadas</div></div>
+                            <div class="success-stat"><div class="success-stat-value">22</div><div class="success-stat-label">Regras identificadas</div></div>
+                        </div>
+                        <div class="success-actions">
+                            <button class="btn btn-secondary" onclick="closeModal()">Ver Depois</button>
+                            <button class="btn btn-primary" onclick="closeModal(); showToast('✓ Políticas adicionadas!')"><span>👁️</span> <span>Ver Regras</span></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-content" id="tab-prompt"><p style="color:var(--gray-600)">Em breve: Descreva suas regras em linguagem natural.</p></div>
+                <div class="tab-content" id="tab-template">
+                    <div style="background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:12px;padding:32px;text-align:center;">
+                        <div style="font-size:48px;margin-bottom:16px;">📋</div>
+                        <h3 style="font-size:18px;font-weight:700;color:var(--gray-900);margin-bottom:8px;">Template Payfy — Melhores Práticas Brasil</h3>
+                        <p style="font-size:14px;color:var(--gray-600);margin-bottom:24px;max-width:480px;margin:0 auto 24px;">Inclui regras para NF-e, VR/VA, CLT, Per diem, CNPJ.</p>
+                        <button class="btn btn-primary" style="width:100%;max-width:320px;justify-content:center;"><span>✨</span> <span>Usar Template</span></button>
+                    </div>
+                </div>
+                <div class="tab-content" id="tab-manual">
+                    <p style="color:var(--gray-600);margin-bottom:var(--spacing-lg)">Você será redirecionado para o configurador visual.</p>
+                    <button class="btn btn-primary" style="width:100%;justify-content:center;"><span>✏️</span> <span>Abrir Configurador</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ─── Data: 22 rules ───
+    var rules = [
+        // Solicitações (5)
+        { policy:'Solicitações', rule:'IA preenche: Centro de Custo, Projeto', type:'Agent', trigger:'Solicitação criada', action:'Preenchimento automático', status:'Ativa', date:'2026-03-20', icon:'📋' },
+        { policy:'Solicitações', rule:'Agent avalia compliance antes de aprovar', type:'Agent', trigger:'Solicitação criada', action:'Avaliar e aprovar/escalar', status:'Ativa', date:'2026-03-20', icon:'📋' },
+        { policy:'Solicitações', rule:'Valor divergente entre solicitação e histórico → Escalar', type:'Flag', trigger:'Valor divergente', action:'Escalar para admin', status:'Ativa', date:'2026-03-18', icon:'📋' },
+        { policy:'Solicitações', rule:'Solicitação duplicada → Bloquear', type:'Flag', trigger:'Duplicada detectada', action:'Bloquear', status:'Ativa', date:'2026-03-18', icon:'📋' },
+        { policy:'Solicitações', rule:'Diretoria: limite de auto-aprovação R$ 10.000', type:'Confidencial', trigger:'Cargo = Diretoria', action:'Auto-aprovar até R$ 10k', status:'Ativa', date:'2026-03-15', icon:'📋' },
+        // Despesas de Cartão (6)
+        { policy:'Despesas de Cartão', rule:'IA preenche: Centro de Custo, Projeto', type:'Agent', trigger:'Transação cartão', action:'Preenchimento automático', status:'Ativa', date:'2026-03-22', icon:'💳' },
+        { policy:'Despesas de Cartão', rule:'SaaS e Software → Auto-aprovar até R$ 1.000', type:'Agent', trigger:'Categoria = SaaS', action:'Auto-aprovar', status:'Ativa', date:'2026-03-22', icon:'💳' },
+        { policy:'Despesas de Cartão', rule:'Recibo duplicado → Escalar', type:'Flag', trigger:'Recibo duplicado', action:'Escalar', status:'Ativa', date:'2026-03-21', icon:'💳' },
+        { policy:'Despesas de Cartão', rule:'NF-e inválida → Rejeitar', type:'Flag', trigger:'NF-e inválida', action:'Rejeitar', status:'Ativa', date:'2026-03-21', icon:'💳' },
+        { policy:'Despesas de Cartão', rule:'Gasto pessoal detectado → Alertar', type:'Flag', trigger:'Gasto pessoal', action:'Alertar gestor', status:'Ativa', date:'2026-03-19', icon:'💳' },
+        { policy:'Despesas de Cartão', rule:'C-level: limite de auto-aprovação R$ 5.000', type:'Confidencial', trigger:'Cargo = C-level', action:'Auto-aprovar até R$ 5k', status:'Ativa', date:'2026-03-15', icon:'💳' },
+        // Reembolsos (6)
+        { policy:'Reembolsos', rule:'Transporte (Uber/99) até R$ 100 → Auto-aprovar', type:'Agent', trigger:'Categoria = Transporte', action:'Auto-aprovar', status:'Ativa', date:'2026-03-23', icon:'📄' },
+        { policy:'Reembolsos', rule:'IA valida: qualidade do recibo, CNPJ, valor, data', type:'Agent', trigger:'Reembolso criado', action:'Validar automaticamente', status:'Ativa', date:'2026-03-23', icon:'📄' },
+        { policy:'Reembolsos', rule:'Sem nota fiscal → Rejeitar automaticamente', type:'Flag', trigger:'Sem NF anexada', action:'Rejeitar', status:'Ativa', date:'2026-03-20', icon:'📄' },
+        { policy:'Reembolsos', rule:'CNPJ inativo → Bloquear', type:'Flag', trigger:'CNPJ inativo', action:'Bloquear', status:'Ativa', date:'2026-03-20', icon:'📄' },
+        { policy:'Reembolsos', rule:'VR/VA no mesmo dia → Alertar gestor', type:'Flag', trigger:'VR + reembolso mesmo dia', action:'Alertar gestor', status:'Draft', date:'2026-03-17', icon:'📄' },
+        { policy:'Reembolsos', rule:'Reembolso mobile só para times Comercial e CS', type:'Confidencial', trigger:'Canal = Mobile', action:'Restringir por time', status:'Ativa', date:'2026-03-14', icon:'📄' },
+        // Viagens (5)
+        { policy:'Viagens', rule:'Hospedagem até R$ 500/noite → Auto-aprovar', type:'Agent', trigger:'Categoria = Hospedagem', action:'Auto-aprovar', status:'Ativa', date:'2026-03-24', icon:'✈️' },
+        { policy:'Viagens', rule:'Voos com 14+ dias antecedência', type:'Agent', trigger:'Reserva voo', action:'Verificar antecedência', status:'Ativa', date:'2026-03-24', icon:'✈️' },
+        { policy:'Viagens', rule:'IA detecta álcool em nota → Escalar para gestor', type:'Flag', trigger:'Álcool detectado', action:'Escalar', status:'Ativa', date:'2026-03-22', icon:'✈️' },
+        { policy:'Viagens', rule:'Reserva < 7 dias → Requer justificativa', type:'Flag', trigger:'Reserva < 7 dias', action:'Exigir justificativa', status:'Ativa', date:'2026-03-22', icon:'✈️' },
+        { policy:'Viagens', rule:'Diretoria: Business class em voos > 4h', type:'Confidencial', trigger:'Cargo = Diretoria + Voo > 4h', action:'Permitir business class', status:'Ativa', date:'2026-03-10', icon:'✈️' },
+    ];
+
+    var activeFilters = { policy: 'all', type: 'all', status: 'all' };
+    var sortCol = null, sortDir = 'asc';
+
+    function renderTable() {
+        var filtered = rules.filter(function(r) {
+            if (activeFilters.policy !== 'all' && r.policy !== activeFilters.policy) return false;
+            if (activeFilters.type !== 'all' && r.type !== activeFilters.type) return false;
+            if (activeFilters.status !== 'all' && r.status !== activeFilters.status) return false;
+            var q = document.getElementById('searchInput').value.toLowerCase();
+            if (q && r.rule.toLowerCase().indexOf(q) === -1 && r.policy.toLowerCase().indexOf(q) === -1 && r.trigger.toLowerCase().indexOf(q) === -1) return false;
+            return true;
+        });
+
+        if (sortCol !== null) {
+            var keys = ['','policy','rule','type','trigger','action','status','date'];
+            var key = keys[sortCol];
+            filtered.sort(function(a,b) {
+                var va = a[key], vb = b[key];
+                if (va < vb) return sortDir === 'asc' ? -1 : 1;
+                if (va > vb) return sortDir === 'asc' ? 1 : -1;
+                return 0;
+            });
+        }
+
+        var tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+        document.getElementById('noResults').style.display = filtered.length === 0 ? 'block' : 'none';
+
+        // Update footer
+        var agents = filtered.filter(function(r){return r.type==='Agent'}).length;
+        var flags = filtered.filter(function(r){return r.type==='Flag'}).length;
+        var confs = filtered.filter(function(r){return r.type==='Confidencial'}).length;
+        document.getElementById('totalRules').textContent = filtered.length;
+        document.getElementById('agentCount').textContent = agents;
+        document.getElementById('flagCount').textContent = flags;
+        document.getElementById('confCount').textContent = confs;
+
+        filtered.forEach(function(r, i) {
+            var tr = document.createElement('tr');
+            tr.style.animationDelay = (i * 0.03) + 's';
+            tr.setAttribute('data-index', rules.indexOf(r));
+
+            var badgeClass = r.type === 'Agent' ? 'badge-agent' : r.type === 'Flag' ? 'badge-flag' : 'badge-confidential';
+            var statusClass = r.status === 'Ativa' ? 'status-active' : 'status-draft';
+
+            tr.innerHTML =
+                '<td><input type="checkbox" class="row-checkbox" onclick="event.stopPropagation(); updateBulk()"></td>' +
+                '<td class="policy-cell">' + r.icon + ' ' + r.policy + '</td>' +
+                '<td class="rule-cell">' + r.rule + '</td>' +
+                '<td><span class="badge-sm ' + badgeClass + '">' + r.type + '</span></td>' +
+                '<td>' + r.trigger + '</td>' +
+                '<td>' + r.action + '</td>' +
+                '<td><span class="' + statusClass + '">' + r.status + '</span></td>' +
+                '<td class="edit-date">' + r.date + '</td>';
+
+            tr.addEventListener('click', function() { openSlideover(rules.indexOf(r)); });
+            tbody.appendChild(tr);
+        });
+    }
+
+    // ─── Filters ───
+    function toggleFilter(el, group) {
+        var val = el.getAttribute('data-filter');
+        if (val === 'all') {
+            activeFilters[group] = 'all';
+        } else {
+            activeFilters[group] = activeFilters[group] === val ? 'all' : val;
+        }
+        // Update UI
+        var container = el.parentElement;
+        container.querySelectorAll('.filter-pill').forEach(function(p) { p.classList.remove('active','active-agent','active-flag','active-conf'); });
+        if (activeFilters[group] === 'all') {
+            container.querySelector('[data-filter="all"]').classList.add('active');
+        } else {
+            el.classList.add('active');
+        }
+        applyFilters();
+    }
+
+    function applyFilters() { renderTable(); }
+
+    // ─── Sort ───
+    function sortTable(col) {
+        if (sortCol === col) { sortDir = sortDir === 'asc' ? 'desc' : 'asc'; }
+        else { sortCol = col; sortDir = 'asc'; }
+
+        // Update header UI
+        document.querySelectorAll('.data-table th').forEach(function(th,i) {
+            th.classList.remove('sorted-asc','sorted-desc');
+            if (i === col) th.classList.add(sortDir === 'asc' ? 'sorted-asc' : 'sorted-desc');
+        });
+        renderTable();
+    }
+
+    // ─── Bulk ───
+    function toggleAllCheckboxes(master) {
+        document.querySelectorAll('.row-checkbox').forEach(function(cb) { cb.checked = master.checked; });
+        updateBulk();
+    }
+
+    function updateBulk() {
+        var checked = document.querySelectorAll('.row-checkbox:checked').length;
+        var bar = document.getElementById('bulkActions');
+        if (checked > 0) {
+            bar.classList.add('show');
+            document.getElementById('bulkCount').textContent = checked + ' selecionada' + (checked > 1 ? 's' : '');
+        } else {
+            bar.classList.remove('show');
+        }
+    }
+
+    // ─── Slide-over ───
+    function openSlideover(idx) {
+        var r = rules[idx];
+        document.getElementById('slideoverTitle').textContent = r.rule;
+        document.getElementById('slideoverSubtitle').textContent = r.icon + ' ' + r.policy + ' · ' + r.type;
+
+        var body = document.getElementById('slideoverBody');
+
+        // Build workflow content based on rule type
+        var html = '';
+
+        // Trigger block
+        html += '<div class="trigger-block"><div class="trigger-header"><div class="trigger-icon">⚡</div><div class="trigger-title">' + r.trigger + '</div><div class="trigger-badge">Gatilho</div></div>';
+        html += '<div class="trigger-content"><span class="trigger-label">Quando</span><span class="trigger-value">' + r.trigger + '</span></div></div>';
+        html += '<div class="connector"></div>';
+
+        if (r.type === 'Agent') {
+            html += '<div class="condition-block"><div class="condition-header"><div class="condition-icon">🤖</div><div class="condition-title">Agente de Política IA <span class="default-badge">DEFAULT</span></div></div>';
+            html += '<div class="condition-row"><span class="action-agent"><span>✨</span> <span>Agente de política</span></span><span class="action-keyword" style="margin-left:8px">irá avaliar e decidir</span></div></div>';
+            html += '<div class="connector"></div>';
+            html += '<div class="final-action"><div class="final-action-icon">✓</div><div class="final-action-text">' + r.action + '</div></div>';
+        } else if (r.type === 'Flag') {
+            html += '<div class="condition-block" style="border-color:#FECACA;"><div class="condition-header"><div class="condition-icon" style="background:#FEE2E2;color:#DC2626;">🚩</div><div class="condition-title">Flag de Override</div></div>';
+            html += '<div class="condition-row"><span class="condition-keyword">Se</span><span class="condition-value">' + r.trigger + '</span></div></div>';
+            html += '<div class="connector"></div>';
+            html += '<div style="background:#FEF2F2;border:1.5px solid #FECACA;border-radius:12px;padding:16px;display:flex;align-items:center;gap:12px;">';
+            html += '<div style="width:36px;height:36px;background:white;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#DC2626;font-size:20px;">🚩</div>';
+            html += '<div style="font-size:16px;font-weight:600;color:#991B1B;">' + r.action + '</div></div>';
+            html += '<div class="flags-override-section" style="margin-top:16px;"><div class="flags-override-header">⚠️ Prioridade Máxima</div>';
+            html += '<p class="flags-override-note">Flags sobrescrevem o Agent. Se ativada, esta flag força a ação independente da decisão do Agent.</p></div>';
+        } else {
+            html += '<div class="condition-block" style="border-color:#FDE68A;"><div class="condition-header"><div class="condition-icon" style="background:#FEF3C7;color:#92400E;">🔒</div><div class="condition-title">Regra Confidencial</div></div>';
+            html += '<div class="condition-row"><span class="condition-keyword">Se</span><span class="condition-value">' + r.trigger + '</span></div></div>';
+            html += '<div class="connector"></div>';
+            html += '<div style="background:#FEF3C7;border:1.5px solid #FDE68A;border-radius:12px;padding:16px;display:flex;align-items:center;gap:12px;">';
+            html += '<div style="width:36px;height:36px;background:white;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#92400E;font-size:20px;">🔒</div>';
+            html += '<div style="font-size:16px;font-weight:600;color:#92400E;">' + r.action + '</div></div>';
+            html += '<p style="font-size:11px;color:var(--gray-500);margin-top:12px;font-style:italic;">Regra confidencial: aplicada pelo Agent mas não visível para o colaborador. Visível apenas para Admins e CFO.</p>';
+        }
+
+        body.innerHTML = html;
+
+        document.getElementById('slideoverOverlay').classList.add('active');
+        document.getElementById('slideover').classList.add('open');
+    }
+
+    function closeSlideover() {
+        document.getElementById('slideoverOverlay').classList.remove('active');
+        document.getElementById('slideover').classList.remove('open');
+    }
+
+    // ─── Agent Mode ───
+    function toggleAgentDropdown(event) {
+        event.stopPropagation();
+        document.getElementById('agentDropdown').classList.toggle('show');
+    }
+    function setAgentMode(mode, event) {
+        event.stopPropagation();
+        var bar = document.getElementById('agentStatusBar');
+        var label = bar.querySelector('.agent-status-label');
+        var info = bar.querySelector('.agent-status-info');
+        var items = document.querySelectorAll('.agent-dropdown-item');
+        bar.className = 'agent-status-bar';
+        items.forEach(function(i){i.classList.remove('active')});
+        event.target.classList.add('active');
+        switch(mode) {
+            case 'off': bar.classList.add('mode-off'); label.textContent='Policy Agent desativado'; info.textContent='O Agent não está avaliando transações'; break;
+            case 'test': bar.classList.add('mode-test'); label.textContent='Policy Agent em teste'; info.textContent='Modo: Teste (admins only) · Decisões visíveis apenas para admins'; break;
+            case 'recommend': label.textContent='Policy Agent ativo'; info.textContent='Modo: Recomendação · Sugere mas não aprova · 99.1% acurácia'; break;
+            case 'auto': label.textContent='Policy Agent ativo'; info.textContent='Modo: Aprovação automática para < R$ 2.000 · 99.1% acurácia · 847 transações'; break;
+        }
+        document.getElementById('agentDropdown').classList.remove('show');
+        showToast('Modo do Agent alterado');
+    }
+    document.addEventListener('click', function(){ document.getElementById('agentDropdown').classList.remove('show'); });
+
+    // ─── Toast ───
+    function showToast(msg) {
+        var existing = document.querySelector('.toast');
+        if (existing) existing.remove();
+        var t = document.createElement('div');
+        t.className = 'toast'; t.textContent = msg;
+        document.body.appendChild(t);
+        setTimeout(function(){t.classList.add('show')},10);
+        setTimeout(function(){t.classList.remove('show');setTimeout(function(){t.remove()},300)},3000);
+    }
+
+    // ─── Modal ───
+    function openNewPolicyModal() { document.getElementById('modalOverlay').classList.add('active'); }
+    function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); resetUploadState(); }
+    function closeModalIfOutside(e) { if(e.target===document.getElementById('modalOverlay')) closeModal(); }
+    function switchTab(name,event) {
+        event.stopPropagation();
+        document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
+        document.querySelectorAll('.tab-content').forEach(function(c){c.classList.remove('active')});
+        event.target.classList.add('active');
+        document.getElementById('tab-'+name).classList.add('active');
+    }
+
+    // ─── Upload ───
+    var uploadArea = document.getElementById('uploadArea');
+    uploadArea.addEventListener('dragover',function(e){e.preventDefault();uploadArea.classList.add('dragover')});
+    uploadArea.addEventListener('dragleave',function(){uploadArea.classList.remove('dragover')});
+    uploadArea.addEventListener('drop',function(e){e.preventDefault();uploadArea.classList.remove('dragover');if(e.dataTransfer.files.length>0)handleFile(e.dataTransfer.files[0])});
+    function handleFileSelect(e){if(e.target.files[0])handleFile(e.target.files[0])}
+    function handleFile(f){
+        if(f.size>10*1024*1024){alert('Arquivo muito grande!');return}
+        if(!f.name.match(/\.(pdf|doc|docx)$/i)){alert('Formato inválido!');return}
+        startProcessing();
+    }
+    function startProcessing(){
+        document.getElementById('uploadContainer').style.display='none';
+        document.getElementById('processingContainer').classList.add('active');
+        setTimeout(function(){
+            document.getElementById('proc-step-2').classList.add('completed');document.getElementById('proc-step-2').classList.remove('active');
+            document.getElementById('proc-step-2').querySelector('.processing-step-status').textContent='Concluído';
+            document.getElementById('proc-step-3').classList.add('active');document.getElementById('proc-step-3').querySelector('.processing-step-status').textContent='Processando...';
+        },2000);
+        setTimeout(function(){
+            document.getElementById('proc-step-3').classList.add('completed');document.getElementById('proc-step-3').classList.remove('active');
+            document.getElementById('proc-step-3').querySelector('.processing-step-status').textContent='Concluído';
+            document.getElementById('proc-step-4').classList.add('active');document.getElementById('proc-step-4').querySelector('.processing-step-status').textContent='Processando...';
+        },4000);
+        setTimeout(function(){
+            document.getElementById('proc-step-4').classList.add('completed');document.getElementById('proc-step-4').classList.remove('active');
+            document.getElementById('proc-step-4').querySelector('.processing-step-status').textContent='Concluído';
+            document.getElementById('processingContainer').classList.remove('active');
+            document.getElementById('successContainer').classList.add('active');
+        },6000);
+    }
+    function resetUploadState(){
+        document.getElementById('uploadContainer').style.display='block';
+        document.getElementById('processingContainer').classList.remove('active');
+        document.getElementById('successContainer').classList.remove('active');
+        ['proc-step-2','proc-step-3','proc-step-4'].forEach(function(id){
+            document.getElementById(id).classList.remove('completed','active');
+        });
+        document.getElementById('proc-step-2').classList.add('active');
+        document.getElementById('proc-step-2').querySelector('.processing-step-status').textContent='Processando...';
+        document.getElementById('proc-step-3').querySelector('.processing-step-status').textContent='Aguardando';
+        document.getElementById('proc-step-4').querySelector('.processing-step-status').textContent='Aguardando';
+    }
+
+    // ─── Init ───
+    renderTable();
+    </script>
+</body>
+</html>
